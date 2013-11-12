@@ -36,10 +36,10 @@ class Coleslaw < Quickl::Command(__FILE__, __LINE__)
     opt.on_tail('--help', "Show this help message"){ raise Quickl::Help }
     opt.on_tail('--version', "Show version and exit"){ raise Quickl::Exit, "#{Quickl.program_name} #{VERSION}" }
     opt.on('--token [TOKEN]', "Set your access token") { |t| @token = t }
-    opt.on('--features_dir [FDIR]', "Set the features directory, default to #{DEFAULT_FEATURES_DIR}") do |features_dir|
+    opt.on('--features-dir [FDIR]', "Set the features directory, default to #{DEFAULT_FEATURES_DIR}") do |features_dir|
       @features_dir = features_dir
     end
-    opt.on('--reports_dir [RDIR]', "Set the reports directory, default to #{DEFAULT_REPORTS_DIR}") do |reports_dir|
+    opt.on('--reports-dir [RDIR]', "Set the reports directory, default to #{DEFAULT_REPORTS_DIR}") do |reports_dir|
       @reports_dir = reports_dir
     end
     opt.on('--server [SERVER]', "Set the server, default to #{DEFAULT_SERVER}") do |server|
