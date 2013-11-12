@@ -4,13 +4,13 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'coleslaw/gem/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "coleslaw-gem"
+  spec.name          = "coleslaw"
   spec.version       = Coleslaw::Gem::VERSION
-  spec.authors       = ["Phuong Nguyen+Bang Dao"]
-  spec.email         = ["phuongnd08@gmail.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
-  spec.homepage      = ""
+  spec.authors       = ["Phuong Nguyen"]
+  spec.email         = ["phuong.nguyen@eastagile.com"]
+  spec.description   = %q{A gem that allow you to upload your test results to http://coleslawapp.com}
+  spec.summary       = %q{A gem that allow you to upload your test results to http://coleslawapp.com}
+  spec.homepage      = "http://github.com/EastAgile/coleslaw-gem"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
@@ -18,6 +18,11 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
+  spec.bindir = "bin"
+  spec.executables = (Dir["bin/*"]).collect { |f| File.basename(f) }
+
+  spec.add_dependency "quickl"
+
   spec.add_development_dependency "bundler", "~> 1.3"
-  spec.add_development_dependency "rake"
+  spec.add_development_dependency "byebug"
 end
