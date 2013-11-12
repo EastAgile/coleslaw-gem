@@ -119,7 +119,7 @@ class Coleslaw < Quickl::Command(__FILE__, __LINE__)
     test_result = JSON.parse(response.body)
     test_result["id"]
   rescue => e
-    puts e.http_body
+    STDERR.puts e.http_body
     nil
   end
 
