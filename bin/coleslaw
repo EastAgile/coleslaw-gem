@@ -96,12 +96,13 @@ class Coleslaw < Quickl::Command(__FILE__, __LINE__)
     end
 
     puts "Creating new test result..."
-    test_result_id = create_test_result(product_id)
-    test_result_files.each do |test_result_file|
-      puts "Uploading [#{test_result_file}]"
-      upload_test_result_file(product_id, test_result_id, test_result_file)
+    if (test_result_id = create_test_result(product_id))
+      test_result_files.each do |test_result_file|
+        puts "Uploading [#{test_result_file}]"
+        upload_test_result_file(product_id, test_result_id, test_result_file)
+      end
+      puts "Successfully created test result ##{test_result_id}"
     end
-    puts "Successfully created test result ##{test_result_id}"
   end
 
   def request_options
@@ -117,6 +118,9 @@ class Coleslaw < Quickl::Command(__FILE__, __LINE__)
 
     test_result = JSON.parse(response.body)
     test_result["id"]
+  rescue => e
+    puts e.http_body
+    nil
   end
 
   def upload_test_result_file(product_id, test_result_id, test_result_file)
