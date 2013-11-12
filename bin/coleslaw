@@ -1,0 +1,144 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+
+begin
+  require 'quickl'
+  require 'rest-client'
+  require 'json'
+rescue LoadError
+  require 'rubygems'
+  gem 'quickl'
+  gem 'curb'
+  retry
+end
+
+#
+# FIX: overview
+#
+# SYNOPSIS
+#   #{command_name} [options] PRODUCT_ID
+#
+# OPTIONS
+# #{summarized_options}
+#
+# DESCRIPTION
+#   FIX: description
+#
+class Coleslaw < Quickl::Command(__FILE__, __LINE__)
+
+  VERSION   = "0.1.0"
+  DEFAULT_FEATURES_DIR = "./features"
+  DEFAULT_REPORTS_DIR = "./features/reports"
+  DEFAULT_SERVER = "http://coleslawapp.com"
+
+  # Install options
+  options do |opt|
+    opt.on_tail('--help', "Show this help message"){ raise Quickl::Help }
+    opt.on_tail('--version', "Show version and exit"){ raise Quickl::Exit, "#{Quickl.program_name} #{VERSION}" }
+    opt.on('--token [TOKEN]', "Set your access token") { |t| @token = t }
+    opt.on('--features_dir [FDIR]', "Set the features directory, default to #{DEFAULT_FEATURES_DIR}") do |features_dir|
+      @features_dir = features_dir
+    end
+    opt.on('--reports_dir [RDIR]', "Set the reports directory, default to #{DEFAULT_REPORTS_DIR}") do |reports_dir|
+      @reports_dir = reports_dir
+    end
+    opt.on('--server [SERVER]', "Set the server, default to #{DEFAULT_SERVER}") do |server|
+      @server = server
+    end
+  end
+
+  def server
+    @server ||= DEFAULT_SERVER
+  end
+
+  def features_dir
+    @features_dir ||= DEFAULT_FEATURES_DIR
+  end
+
+  def reports_dir
+    @reports_dir ||= DEFAULT_REPORTS_DIR
+  end
+
+  def token
+    @token ||= (
+      t = read_token_from_current_working_dir
+      t ||= read_token_from_home_dir
+      t.strip! unless t.nil?
+      t
+    )
+  end
+
+  def read_token_from_current_working_dir
+    if File.exist?("~/.coleslaw")
+      File.open("~/.coleslaw") do |f|
+        return f.read
+      end
+    end
+  end
+
+  def read_token_from_home_dir
+    if File.exist?(".coleslaw")
+      File.open(".coleslaw") do |f|
+        return f.read
+      end
+    end
+  end
+
+  def execute(args)
+    unless token
+      raise Quickl::InvalidArgument, "Please provide token by either use --token or create .coleslaw file in your current working directory"
+    end
+
+    product_id = args.first.to_i
+
+    unless product_id > 0
+      raise Quickl::InvalidArgument, "Invalid product id"
+    end
+
+    puts "Creating new test result..."
+    test_result_id = create_test_result(product_id)
+    test_result_files.each do |test_result_file|
+      puts "Uploading [#{test_result_file}]"
+      upload_test_result_file(product_id, test_result_id, test_result_file)
+    end
+    puts "Successfully created test result ##{test_result_id}"
+  end
+
+  def request_options
+    { content_type: :json, :accept => :json, :'Token-Secret' => token }
+  end
+
+  def create_test_result(product_id)
+    response = RestClient.post(
+        server + "/products/#{product_id}/test_results",
+        {},
+        **request_options
+    )
+
+    test_result = JSON.parse(response.body)
+    test_result["id"]
+  end
+
+  def upload_test_result_file(product_id, test_result_id, test_result_file)
+    RestClient.post(
+        server + "/products/#{product_id}/test_results/#{test_result_id}/test_result_files",
+        {
+            test_result_file: {
+                path: test_result_file,
+                file: File.new(test_result_file, 'rb')
+            }
+        },
+        **request_options
+    )
+  end
+
+  def test_result_files
+    Dir[features_dir + "/**/*.feature"] + Dir[reports_dir + "/**/*.xml"]
+  end
+
+end
+
+if __FILE__ == $0
+  Coleslaw.run(ARGV)
+end
+
