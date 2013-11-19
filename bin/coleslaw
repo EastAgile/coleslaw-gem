@@ -13,7 +13,7 @@ rescue LoadError
 end
 
 #
-# FIX: overview
+# Command Line Interface for https://www.coleslawapp.com - The easiest way to share your BDD features with product owner
 #
 # SYNOPSIS
 #   #{command_name} [options] PRODUCT_ID
@@ -21,15 +21,12 @@ end
 # OPTIONS
 # #{summarized_options}
 #
-# DESCRIPTION
-#   FIX: description
-#
 class Coleslaw < Quickl::Command(__FILE__, __LINE__)
 
   VERSION   = "0.1.0"
   DEFAULT_FEATURES_DIR = "./features"
   DEFAULT_REPORTS_DIR = "./features/reports"
-  DEFAULT_SERVER = "http://coleslawapp.com"
+  DEFAULT_SERVER = "https://www.coleslawapp.com"
 
   # Install options
   options do |opt|
