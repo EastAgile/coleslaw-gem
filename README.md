@@ -1,14 +1,14 @@
 # Coleslaw Gem
 
 ColeslawApp (http://www.coleslawapp.com) is an easy and sexy way to
-share your hard built Cucumber (Ruby) or Lettuce (Python) features file
-with your product owner and may be the world.
+share your hard built Cucumber (Ruby) or Lettuce (Python) feature files
+with your product owner and maybe the world.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'coleslaw-gem'
+    gem 'coleslaw'
 
 And then execute:
 
