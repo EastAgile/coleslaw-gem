@@ -86,17 +86,17 @@ class Coleslaw < Quickl::Command(__FILE__, __LINE__)
       raise Quickl::InvalidArgument, "Please provide token by either use --token or create .coleslaw file in your current working directory"
     end
 
-    product_id = args.first.to_i
+    project_id = args.first.to_i
 
-    unless product_id > 0
-      raise Quickl::InvalidArgument, "Invalid product id"
+    unless project_id > 0
+      raise Quickl::InvalidArgument, "Invalid project id"
     end
 
     puts "Creating new test result..."
-    if (test_result_id = create_test_result(product_id))
+    if (test_result_id = create_test_result(project_id))
       test_result_files.each do |test_result_file|
         puts "Uploading [#{test_result_file}]"
-        upload_test_result_file(product_id, test_result_id, test_result_file)
+        upload_test_result_file(project_id, test_result_id, test_result_file)
       end
       puts "Successfully created test result ##{test_result_id}"
     end
@@ -106,9 +106,9 @@ class Coleslaw < Quickl::Command(__FILE__, __LINE__)
     { content_type: :json, :accept => :json, :'Token-Secret' => token }
   end
 
-  def create_test_result(product_id)
+  def create_test_result(project_id)
     response = RestClient.post(
-        server + "/products/#{product_id}/test_results",
+        server + "/projects/#{project_id}/test_results",
         {},
         **request_options
     )
@@ -120,9 +120,9 @@ class Coleslaw < Quickl::Command(__FILE__, __LINE__)
     nil
   end
 
-  def upload_test_result_file(product_id, test_result_id, test_result_file)
+  def upload_test_result_file(project_id, test_result_id, test_result_file)
     RestClient.post(
-        server + "/products/#{product_id}/test_results/#{test_result_id}/test_result_files",
+        server + "/projects/#{project_id}/test_results/#{test_result_id}/test_result_files",
         {
             test_result_file: {
                 path: test_result_file,
