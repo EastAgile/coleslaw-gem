@@ -22,7 +22,7 @@ Or install it yourself as:
 
 ### Get your secret key
   Visit http://www.coleslawapp.com and register an account there. You
-may also want to create a project in order to have a project id.
+may also want to create a project in order to have a project token.
 
 Then visit https://www.coleslawapp.com/api_tokens and copy your secret
 token.
@@ -32,10 +32,10 @@ folder and your .xml test result file is in features/reports/. You can
 customize these with --features-dir and --reports-dir.
 
 Now run:
-  $ bundle exec coleslaw --token [Your secret token here] [Project Id]
+  $ bundle exec coleslaw --token [Your secret token here] [Project Token]
 
 And viola, tests will be uploaded to Coleslaw and rendered. Visit
-https://www.coleslawapp.com/products and start browing your uploaded
+https://www.coleslawapp.com/dashboard and start browsing your uploaded
 tests.
 
 ## Contributing

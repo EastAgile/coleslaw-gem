@@ -16,7 +16,7 @@ end
 # Command Line Interface for https://www.coleslawapp.com - The easiest way to share your BDD features with product owner
 #
 # SYNOPSIS
-#   #{command_name} [options] PRODUCT_ID
+#   #{command_name} [options] PROJECT_TOKEN
 #
 # OPTIONS
 # #{summarized_options}
@@ -32,7 +32,7 @@ class Coleslaw < Quickl::Command(__FILE__, __LINE__)
   options do |opt|
     opt.on_tail('--help', "Show this help message"){ raise Quickl::Help }
     opt.on_tail('--version', "Show version and exit"){ raise Quickl::Exit, "#{Quickl.program_name} #{VERSION}" }
-    opt.on('--token [TOKEN]', "Set your access token") { |t| @token = t }
+    opt.on('--token [API_TOKEN]', "Set your access token") { |t| @token = t }
     opt.on('--features-dir [FDIR]', "Set the features directory, default to #{DEFAULT_FEATURES_DIR}") do |features_dir|
       @features_dir = features_dir
     end
@@ -86,17 +86,17 @@ class Coleslaw < Quickl::Command(__FILE__, __LINE__)
       raise Quickl::InvalidArgument, "Please provide token by either use --token or create .coleslaw file in your current working directory"
     end
 
-    project_id = args.first.to_i
+    project_token = args.first
 
-    unless project_id > 0
-      raise Quickl::InvalidArgument, "Invalid project id"
+    unless project_token
+      raise Quickl::InvalidArgument, "Please provide project token"
     end
 
     puts "Creating new test result..."
-    if (test_result_id = create_test_result(project_id))
+    if (test_result_id = create_test_result(project_token))
       test_result_files.each do |test_result_file|
         puts "Uploading [#{test_result_file}]"
-        upload_test_result_file(project_id, test_result_id, test_result_file)
+        upload_test_result_file(project_token, test_result_id, test_result_file)
       end
       puts "Successfully created test result ##{test_result_id}"
     end
@@ -106,9 +106,9 @@ class Coleslaw < Quickl::Command(__FILE__, __LINE__)
     { content_type: :json, :accept => :json, :'Token-Secret' => token }
   end
 
-  def create_test_result(project_id)
+  def create_test_result(project_token)
     response = RestClient.post(
-        server + "/projects/#{project_id}/test_results",
+        server + "/projects/#{project_token}/test_results",
         {},
         **request_options
     )
@@ -120,9 +120,9 @@ class Coleslaw < Quickl::Command(__FILE__, __LINE__)
     nil
   end
 
-  def upload_test_result_file(project_id, test_result_id, test_result_file)
+  def upload_test_result_file(project_token, test_result_id, test_result_file)
     RestClient.post(
-        server + "/projects/#{project_id}/test_results/#{test_result_id}/test_result_files",
+        server + "/projects/#{project_token}/test_results/#{test_result_id}/test_result_files",
         {
             test_result_file: {
                 path: test_result_file,
