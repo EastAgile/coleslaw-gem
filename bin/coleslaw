@@ -122,15 +122,16 @@ class Coleslaw < Quickl::Command(__FILE__, __LINE__)
 
   def upload_test_result_file(project_token, test_result_id, test_result_file)
     RestClient.post(
-        server + "/projects/#{project_token}/test_results/#{test_result_id}/test_result_files",
-        {
-            test_result_file: {
-                path: test_result_file,
-                file: File.new(test_result_file, 'rb')
-            }
-        },
-        **request_options
-    )
+      server + "/projects/#{project_token}/test_results/#{test_result_id}/add_file",
+      {
+        file: File.new(test_result_file, 'rb')
+      },
+      **request_options
+    ) do |response, request, result, &block|
+      unless [301, 302, 307].include? response.code # RestClient does not handle redirects on POST
+        response.return!(request, result, &block)
+      end
+    end
   end
 
   def test_result_files
