@@ -23,7 +23,7 @@ end
 #
 class Coleslaw < Quickl::Command(__FILE__, __LINE__)
 
-  VERSION   = "0.1.0"
+  VERSION   = "1.0.1"
   DEFAULT_FEATURES_DIR = "./features"
   DEFAULT_REPORTS_DIR = "./features/reports"
   DEFAULT_SERVER = "https://www.coleslawapp.com"
