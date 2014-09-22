@@ -23,7 +23,7 @@ end
 #
 class Coleslaw < Quickl::Command(__FILE__, __LINE__)
 
-  VERSION   = "1.0.1"
+  VERSION   = "1.1.0"
   DEFAULT_FEATURES_DIR = "./features"
   DEFAULT_REPORTS_DIR = "./features/reports"
   DEFAULT_SERVER = "https://www.coleslawapp.com"
@@ -123,9 +123,7 @@ class Coleslaw < Quickl::Command(__FILE__, __LINE__)
   def upload_test_result_file(project_token, test_result_id, test_result_file)
     RestClient.post(
       server + "/projects/#{project_token}/test_results/#{test_result_id}/add_file",
-      {
-        file: File.new(test_result_file, 'rb')
-      },
+      request_payload(test_result_file),
       **request_options
     ) do |response, request, result, &block|
       unless [301, 302, 307].include? response.code # RestClient does not handle redirects on POST
@@ -138,6 +136,11 @@ class Coleslaw < Quickl::Command(__FILE__, __LINE__)
     Dir[features_dir + "/**/*.feature"] + Dir[reports_dir + "/**/*.xml"]
   end
 
+  def request_payload(test_result_file)
+    file = File.new(test_result_file, 'rb')
+    group = File.basename(File.dirname(file)) # Name of the parent directory
+    { file: file, group: group }
+  end
 end
 
 Coleslaw.run(ARGV)
